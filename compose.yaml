@@ -1,0 +1,104 @@
+# Boundary Lab.
+#
+# Two services. The API container holds all three engines at once, which is deliberate: the three
+# live demos address one running process, so nothing restarts between them and the public contract
+# is demonstrably the same contract in all three cases.
+#
+#   make start          bring everything up
+#   make demo           run all three demos
+#   make bench          measure the boundaries
+#
+# Ports are published on the host so the benchmark harness can address the API through the front
+# door and the Go service directly, and compare the two.
+
+name: boundary-lab
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: build/api.Dockerfile
+    image: boundary-lab/api:latest
+    ports:
+      - "127.0.0.1:${API_PORT:-8099}:80"
+    environment:
+      APP_ENV: prod
+      SERVER_NAME: ":80"
+
+      # Which engine serves a request when the override header is absent.
+      RISK_ENGINE: "${RISK_ENGINE:-php}"
+
+      # Enabled HERE and only here.
+      #
+      # The application default (api/.env) is 0, because an endpoint whose behaviour can be
+      # steered by a request header has no business being reachable in production. Turning it on
+      # is an explicit, local, lab-only decision — which is the layering the talk argues for:
+      # safe by default, unsafe on purpose and in writing.
+      BOUNDARY_LAB_ALLOW_ENGINE_OVERRIDE: "1"
+
+      MONGODB_URI: "mongodb://mongo:27017/?w=majority&journal=true"
+      PHP_RISK_ENGINE_URL: "http://php-risk"
+      RISK_ENGINE_URL: "http://risk-engine:8081"
+      RISK_ENGINE_TIMEOUT: "1.0"
+      RISK_ENGINE_MAX_DURATION: "2.0"
+
+      # MUST match the risk-engine service below. Different forest sizes mean the two are scoring
+      # different models, and every parity assertion becomes a coincidence.
+      BOUNDARY_LAB_TREE_COUNT: "${BOUNDARY_LAB_TREE_COUNT:-256}"
+
+      # Worker mode. Not for throughput — see build/Caddyfile.
+      WORKER_SCRIPT: "/app/public/index.php"
+      API_WORKERS: "${API_WORKERS:-4}"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      php-risk:
+        condition: service_healthy
+      risk-engine:
+        # Waits for the Go service to have built its model, so the very first go-http request is
+        # not measuring a cold start.
+        condition: service_healthy
+    restart: unless-stopped
+
+  risk-engine:
+    build:
+      context: .
+      dockerfile: build/risk-engine.Dockerfile
+    image: boundary-lab/risk-engine:latest
+    ports:
+      # Published so the benchmark can measure this service directly and separate its own cost
+      # from the cost of reaching it through API Platform.
+      - "127.0.0.1:${RISK_ENGINE_PORT:-8098}:8081"
+    environment:
+      RISK_SERVER_ADDR: ":8081"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      BOUNDARY_LAB_TREE_COUNT: "${BOUNDARY_LAB_TREE_COUNT:-256}"
+    restart: unless-stopped
+
+  php-risk:
+    # Same PHP runtime/settings as the public API. The native extension is present but unused here.
+    image: boundary-lab/api:latest
+    environment:
+      APP_ENV: prod
+      SERVER_NAME: ':80'
+      PRIVATE_RISK_SERVICE: '1'
+      RISK_ENGINE: php
+      BOUNDARY_LAB_ALLOW_ENGINE_OVERRIDE: '0'
+      BOUNDARY_LAB_TREE_COUNT: '${BOUNDARY_LAB_TREE_COUNT:-256}'
+      WORKER_SCRIPT: /app/public/index.php
+      API_WORKERS: '${API_WORKERS:-4}'
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:8.0
+    volumes:
+      - card-cycle-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', 'quit(db.adminCommand({ping:1}).ok ? 0 : 1)']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+volumes:
+  card-cycle-data:

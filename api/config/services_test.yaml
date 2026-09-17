@@ -1,0 +1,3 @@
+services:
+    App\Tests\Support\InMemoryAccountRepository: ~
+    App\Domain\Bank\AccountRepository: '@App\Tests\Support\InMemoryAccountRepository'

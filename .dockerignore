@@ -1,0 +1,13 @@
+# Keep the build context small and deterministic.
+**/vendor
+**/node_modules
+api/var
+benchmark/results
+build/frankenphp/frankenphp
+slides/dist
+slides/node_modules
+.git
+.github
+**/.backups
+api/benchmark-micro-*.json
+*.md

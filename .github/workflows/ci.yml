@@ -1,0 +1,245 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Cancel superseded runs on the same ref. The native build is slow and there is no value in
+# finishing one for a commit that has already been replaced.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  FRANKENPHP_BUILDER: dunglas/frankenphp:1.12.7-builder-php8.5
+
+jobs:
+  # ================================================================================================
+  go:
+    name: Go — format, vet, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+          cache-dependency-path: go/go.sum
+
+      - name: gofmt
+        working-directory: go
+        run: |
+          # Includes ext/, even though its //export_php: directives are not gofmt-stable: gofmt
+          # rewrites them to "// export_php:" because the underscore fails Go's directive test.
+          # The committed form is the gofmt-clean one, and extension-init accepts it — verified.
+          # See docs/limitations.md §4.
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "::error::gofmt needed on:"
+            echo "$unformatted"
+            gofmt -d .
+            exit 1
+          fi
+
+      - name: go vet
+        working-directory: go
+        run: go vet ./...
+
+      - name: go test
+        working-directory: go
+        # -count=1 because the contract and fixture tests read files Go's test cache does not track.
+        # A cached PASS here would be worthless: those are precisely the tests that catch drift
+        # between the code and the committed contract.
+        run: go test -count=1 -race ./...
+
+      - name: go build (the HTTP service must build without CGO)
+        working-directory: go
+        run: CGO_ENABLED=0 go build ./...
+
+  # ================================================================================================
+  php:
+    name: PHP — tests and static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: opcache, mongodb
+          ini-values: opcache.enable_cli=1, opcache.jit=tracing, opcache.jit_buffer_size=64M
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('api/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install dependencies
+        working-directory: api
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: PHPUnit
+        working-directory: api
+        run: php bin/phpunit
+
+      - name: Warm the container so PHPStan can read it
+        working-directory: api
+        run: php bin/console cache:warmup --env=dev
+
+      - name: PHPStan (level 9, no baseline)
+        working-directory: api
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+  # ================================================================================================
+  contract:
+    name: Contract — the generated client is up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mongodb
+          coverage: none
+
+      - name: Install dependencies
+        working-directory: api
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Regenerate the Jane client and diff it
+        working-directory: api
+        run: |
+          # The generated client is committed so that `git clone && make demo` needs no codegen step.
+          # That is only safe if CI proves the committed copy still matches the contract.
+          vendor/bin/jane-openapi generate --config-file=jane-configuration.php
+          if ! git diff --quiet -- src/Infrastructure/Generated; then
+            echo "::error::The committed Jane client differs from the contract. Run 'make contract-php' and commit."
+            git diff --stat -- src/Infrastructure/Generated
+            exit 1
+          fi
+
+  # ================================================================================================
+  native:
+    name: Native — build FrankenPHP with the Go extension
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache the Go module cache used inside the builder image
+        uses: actions/cache@v4
+        with:
+          path: /tmp/bl-gocache
+          key: native-gocache-${{ hashFiles('go/**/go.sum', 'build/frankenphp/go.sum') }}
+          restore-keys: native-gocache-
+
+      - name: Generate the extension glue and build the binary
+        run: |
+          mkdir -p /tmp/bl-gocache
+          docker run --rm \
+            -v "$PWD":/work -v /tmp/bl-gocache:/root/go -w /work \
+            "$FRANKENPHP_BUILDER" bash -euo pipefail -c '
+              export PATH=/usr/local/go/bin:$PATH
+              export CGO_ENABLED=1
+              # -D_GNU_SOURCE is required and is NOT in the upstream extension docs: the generated
+              # risk.c includes php.h, which uses memrchr, a GNU extension.
+              export CGO_CFLAGS="-D_GNU_SOURCE $(php-config --includes)"
+              export CGO_LDFLAGS="$(php-config --ldflags) $(php-config --libs)"
+
+              cd /work/go/ext
+              GEN_STUB_SCRIPT=/usr/local/lib/php/build/gen_stub.php \
+                frankenphp extension-init risk.go
+
+              cd /work/build/frankenphp
+              # Like the Docker build (which excludes .git), omit optional VCS stamping.
+              # The checkout mounted by the runner may be owned by a different UID.
+              # https://pkg.go.dev/cmd/go#hdr-Compile_packages_and_dependencies
+              go build -buildvcs=false -tags=nobadger,nomysql,nopgx,nomercure,nowatcher \
+                -o /work/build/frankenphp/frankenphp .
+            '
+
+      - name: The extension must actually work
+        # Not "did it compile". This runs the reference payload through the Go function and checks
+        # the verdict, so a binary that builds but disagrees with the specification fails here.
+        run: |
+          docker run --rm -v "$PWD":/work -w /work "$FRANKENPHP_BUILDER" \
+            ./build/frankenphp/frankenphp php-cli build/verify-extension.php
+
+      - name: The committed PHP stub must match the generated one
+        # The stub is the cross-language contract and PHPStan depends on it. If Go's signatures change
+        # and the committed stub does not, static analysis would be checking against a stale contract.
+        run: |
+          if ! diff -u api/stubs/native-risk.stub.php go/ext/risk.stub.php; then
+            echo "::error::api/stubs/native-risk.stub.php is stale. Copy go/ext/risk.stub.php over it."
+            exit 1
+          fi
+
+  # ================================================================================================
+  parity:
+    name: Parity — all three engines must agree
+    runs-on: ubuntu-latest
+    # The whole point of this job is the third engine, which needs the native build.
+    needs: [go, php]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and start the stack
+        run: docker compose up -d --build --wait
+
+      - name: Show what the deployment can serve
+        run: |
+          curl -fsS http://localhost:8099/_lab/engines | tee /tmp/engines.json
+
+          # Parity that quietly skipped an engine would look like proof while proving less. This has
+          # already happened once during development, so CI refuses to continue on two engines.
+          available=$(jq '[.engines[] | select(.available)] | length' /tmp/engines.json)
+          if [ "$available" -ne 4 ]; then
+            echo "::error::Expected all 4 configurations to be available, found $available."
+            jq . /tmp/engines.json
+            exit 1
+          fi
+
+      - name: Parity
+        # Via `frankenphp php-cli`, not `php`: the Go extension exists only in the custom FrankenPHP
+        # binary, so the stock CLI would silently report the native engine as unavailable.
+        run: docker compose exec -T api frankenphp php-cli bin/console lab:parity
+
+      - name: The committed fixtures must match what the engine produces
+        run: |
+          docker compose exec -T api frankenphp php-cli bin/console lab:fixtures:generate
+          docker compose cp api:/fixtures/risk-cases.json /tmp/regenerated.json
+          if ! diff -u fixtures/risk-cases.json /tmp/regenerated.json; then
+            echo "::error::fixtures/risk-cases.json is stale. Run 'make fixtures' and commit."
+            git diff --stat -- fixtures/risk-cases.json
+            exit 1
+          fi
+
+      - name: The three demos must work
+        run: |
+          for engine in php php-http go-http go-native; do
+            ./benchmark/demo.sh "$engine"
+          done
+
+      - name: Benchmark smoke test
+        # Deliberately NOT a performance assertion. A shared CI runner cannot produce meaningful
+        # latency figures, and a threshold here would fail for reasons unrelated to the change.
+        # This only proves the harness still runs.
+        run: |
+          docker compose exec -T api frankenphp php-cli bin/console lab:bench:micro \
+            --iterations=200 --warmup=50
+
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --tail=200
+
+      - name: Stop
+        if: always()
+        run: docker compose down --remove-orphans --volumes

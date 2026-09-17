@@ -1,0 +1,1663 @@
+{
+  "protocol": {
+    "campaignsPerLoad": 5,
+    "repeatsPerCampaign": 4,
+    "samplesPerBlock": 200,
+    "warmupPerBlock": 40,
+    "concurrency": 1,
+    "totalMeasuredRequests": 64000,
+    "aggregation": "Median of five campaign estimates. Each campaign estimate is the median of four block p50s; for four values, average the two central values. Ranges are minimum/maximum of campaign estimates, not confidence intervals or pooled percentiles."
+  },
+  "campaigns": [
+    {
+      "file": "bench-256-20260917T094758Z.json",
+      "environment": {
+        "engines": {
+          "go-http": {
+            "available": true,
+            "label": "Go, over HTTP"
+          },
+          "go-native": {
+            "available": true,
+            "label": "Go, native in process"
+          },
+          "php": {
+            "available": true,
+            "label": "PHP, in process"
+          },
+          "php-http": {
+            "available": true,
+            "label": "PHP, over HTTP"
+          }
+        },
+        "native": {
+          "cpus": 12,
+          "engine": "go-native",
+          "goVersion": "go1.26.7",
+          "goarch": "arm64",
+          "goos": "linux",
+          "goroutines": 35,
+          "treeCount": 256
+        },
+        "php": {
+          "jit": "on",
+          "opcache": true,
+          "version": "8.5.10",
+          "worker_mode": true,
+          "zts": true
+        }
+      },
+      "treeCount": 256
+    },
+    {
+      "file": "bench-256-20260917T094828Z.json",
+      "environment": {
+        "engines": {
+          "go-http": {
+            "available": true,
+            "label": "Go, over HTTP"
+          },
+          "go-native": {
+            "available": true,
+            "label": "Go, native in process"
+          },
+          "php": {
+            "available": true,
+            "label": "PHP, in process"
+          },
+          "php-http": {
+            "available": true,
+            "label": "PHP, over HTTP"
+          }
+        },
+        "native": {
+          "cpus": 12,
+          "engine": "go-native",
+          "goVersion": "go1.26.7",
+          "goarch": "arm64",
+          "goos": "linux",
+          "goroutines": 35,
+          "treeCount": 256
+        },
+        "php": {
+          "jit": "on",
+          "opcache": true,
+          "version": "8.5.10",
+          "worker_mode": true,
+          "zts": true
+        }
+      },
+      "treeCount": 256
+    },
+    {
+      "file": "bench-256-20260917T094908Z.json",
+      "environment": {
+        "engines": {
+          "go-http": {
+            "available": true,
+            "label": "Go, over HTTP"
+          },
+          "go-native": {
+            "available": true,
+            "label": "Go, native in process"
+          },
+          "php": {
+            "available": true,
+            "label": "PHP, in process"
+          },
+          "php-http": {
+            "available": true,
+            "label": "PHP, over HTTP"
+          }
+        },
+        "native": {
+          "cpus": 12,
+          "engine": "go-native",
+          "goVersion": "go1.26.7",
+          "goarch": "arm64",
+          "goos": "linux",
+          "goroutines": 35,
+          "treeCount": 256
+        },
+        "php": {
+          "jit": "on",
+          "opcache": true,
+          "version": "8.5.10",
+          "worker_mode": true,
+          "zts": true
+        }
+      },
+      "treeCount": 256
+    },
+    {
+      "file": "bench-256-20260917T094954Z.json",
+      "environment": {
+        "engines": {
+          "go-http": {
+            "available": true,
+            "label": "Go, over HTTP"
+          },
+          "go-native": {
+            "available": true,
+            "label": "Go, native in process"
+          },
+          "php": {
+            "available": true,
+            "label": "PHP, in process"
+          },
+          "php-http": {
+            "available": true,
+            "label": "PHP, over HTTP"
+          }
+        },
+        "native": {
+          "cpus": 12,
+          "engine": "go-native",
+          "goVersion": "go1.26.7",
+          "goarch": "arm64",
+          "goos": "linux",
+          "goroutines": 35,
+          "treeCount": 256
+        },
+        "php": {
+          "jit": "on",
+          "opcache": true,
+          "version": "8.5.10",
+          "worker_mode": true,
+          "zts": true
+        }
+      },
+      "treeCount": 256
+    },
+    {
+      "file": "bench-256-20260917T095031Z.json",
+      "environment": {
+        "engines": {
+          "go-http": {
+            "available": true,
+            "label": "Go, over HTTP"
+          },
+          "go-native": {
+            "available": true,
+            "label": "Go, native in process"
+          },
+          "php": {
+            "available": true,
+            "label": "PHP, in process"
+          },
+          "php-http": {
+            "available": true,
+            "label": "PHP, over HTTP"
+          }
+        },
+        "native": {
+          "cpus": 12,
+          "engine": "go-native",
+          "goVersion": "go1.26.7",
+          "goarch": "arm64",
+          "goos": "linux",
+          "goroutines": 35,
+          "treeCount": 256
+        },
+        "php": {
+          "jit": "on",
+          "opcache": true,
+          "version": "8.5.10",
+          "worker_mode": true,
+          "zts": true
+        }
+      },
+      "treeCount": 256
+    },
+    {
+      "file": "bench-4096-20260917T095113Z.json",
+      "environment": {
+        "engines": {
+          "go-http": {
+            "available": true,
+            "label": "Go, over HTTP"
+          },
+          "go-native": {
+            "available": true,
+            "label": "Go, native in process"
+          },
+          "php": {
+            "available": true,
+            "label": "PHP, in process"
+          },
+          "php-http": {
+            "available": true,
+            "label": "PHP, over HTTP"
+          }
+        },
+        "native": {
+          "cpus": 12,
+          "engine": "go-native",
+          "goVersion": "go1.26.7",
+          "goarch": "arm64",
+          "goos": "linux",
+          "goroutines": 35,
+          "treeCount": 4096
+        },
+        "php": {
+          "jit": "on",
+          "opcache": true,
+          "version": "8.5.10",
+          "worker_mode": true,
+          "zts": true
+        }
+      },
+      "treeCount": 4096
+    },
+    {
+      "file": "bench-4096-20260917T095149Z.json",
+      "environment": {
+        "engines": {
+          "go-http": {
+            "available": true,
+            "label": "Go, over HTTP"
+          },
+          "go-native": {
+            "available": true,
+            "label": "Go, native in process"
+          },
+          "php": {
+            "available": true,
+            "label": "PHP, in process"
+          },
+          "php-http": {
+            "available": true,
+            "label": "PHP, over HTTP"
+          }
+        },
+        "native": {
+          "cpus": 12,
+          "engine": "go-native",
+          "goVersion": "go1.26.7",
+          "goarch": "arm64",
+          "goos": "linux",
+          "goroutines": 35,
+          "treeCount": 4096
+        },
+        "php": {
+          "jit": "on",
+          "opcache": true,
+          "version": "8.5.10",
+          "worker_mode": true,
+          "zts": true
+        }
+      },
+      "treeCount": 4096
+    },
+    {
+      "file": "bench-4096-20260917T095237Z.json",
+      "environment": {
+        "engines": {
+          "go-http": {
+            "available": true,
+            "label": "Go, over HTTP"
+          },
+          "go-native": {
+            "available": true,
+            "label": "Go, native in process"
+          },
+          "php": {
+            "available": true,
+            "label": "PHP, in process"
+          },
+          "php-http": {
+            "available": true,
+            "label": "PHP, over HTTP"
+          }
+        },
+        "native": {
+          "cpus": 12,
+          "engine": "go-native",
+          "goVersion": "go1.26.7",
+          "goarch": "arm64",
+          "goos": "linux",
+          "goroutines": 35,
+          "treeCount": 4096
+        },
+        "php": {
+          "jit": "on",
+          "opcache": true,
+          "version": "8.5.10",
+          "worker_mode": true,
+          "zts": true
+        }
+      },
+      "treeCount": 4096
+    },
+    {
+      "file": "bench-4096-20260917T095318Z.json",
+      "environment": {
+        "engines": {
+          "go-http": {
+            "available": true,
+            "label": "Go, over HTTP"
+          },
+          "go-native": {
+            "available": true,
+            "label": "Go, native in process"
+          },
+          "php": {
+            "available": true,
+            "label": "PHP, in process"
+          },
+          "php-http": {
+            "available": true,
+            "label": "PHP, over HTTP"
+          }
+        },
+        "native": {
+          "cpus": 12,
+          "engine": "go-native",
+          "goVersion": "go1.26.7",
+          "goarch": "arm64",
+          "goos": "linux",
+          "goroutines": 35,
+          "treeCount": 4096
+        },
+        "php": {
+          "jit": "on",
+          "opcache": true,
+          "version": "8.5.10",
+          "worker_mode": true,
+          "zts": true
+        }
+      },
+      "treeCount": 4096
+    },
+    {
+      "file": "bench-4096-20260917T095408Z.json",
+      "environment": {
+        "engines": {
+          "go-http": {
+            "available": true,
+            "label": "Go, over HTTP"
+          },
+          "go-native": {
+            "available": true,
+            "label": "Go, native in process"
+          },
+          "php": {
+            "available": true,
+            "label": "PHP, in process"
+          },
+          "php-http": {
+            "available": true,
+            "label": "PHP, over HTTP"
+          }
+        },
+        "native": {
+          "cpus": 12,
+          "engine": "go-native",
+          "goVersion": "go1.26.7",
+          "goarch": "arm64",
+          "goos": "linux",
+          "goroutines": 35,
+          "treeCount": 4096
+        },
+        "php": {
+          "jit": "on",
+          "opcache": true,
+          "version": "8.5.10",
+          "worker_mode": true,
+          "zts": true
+        }
+      },
+      "treeCount": 4096
+    }
+  ],
+  "rows": [
+    {
+      "trees": 256,
+      "profile": "RULES",
+      "engine": "php",
+      "p50": 2.8057295,
+      "range": [
+        1.6128125,
+        3.8777295
+      ],
+      "p95": 4.1632915,
+      "engineP50": 0.0095,
+      "engineRange": [
+        0.0055,
+        0.0125
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-256-20260917T094758Z.json",
+          "p50": 1.6128125,
+          "p95": 2.606521,
+          "engineP50": 0.0055,
+          "repeatP50": [
+            1.455042,
+            1.693833,
+            1.531792,
+            1.744042
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094828Z.json",
+          "p50": 2.8057295,
+          "p95": 4.1632915,
+          "engineP50": 0.0095,
+          "repeatP50": [
+            1.635292,
+            2.649125,
+            2.995875,
+            2.962334
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094908Z.json",
+          "p50": 3.8777295,
+          "p95": 6.363042,
+          "engineP50": 0.0125,
+          "repeatP50": [
+            3.42325,
+            4.332209,
+            3.280875,
+            4.521458
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094954Z.json",
+          "p50": 2.8009375,
+          "p95": 4.092875,
+          "engineP50": 0.009,
+          "repeatP50": [
+            2.801083,
+            2.716417,
+            2.800792,
+            2.927458
+          ]
+        },
+        {
+          "file": "bench-256-20260917T095031Z.json",
+          "p50": 2.872542,
+          "p95": 4.272145999999999,
+          "engineP50": 0.0095,
+          "repeatP50": [
+            2.175458,
+            3.445833,
+            2.836834,
+            2.90825
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 256,
+      "profile": "RULES",
+      "engine": "php-http",
+      "p50": 4.307145500000001,
+      "range": [
+        2.79675,
+        7.8268545
+      ],
+      "p95": 6.511041499999999,
+      "engineP50": 1.075,
+      "engineRange": [
+        0.703,
+        1.841
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-256-20260917T094758Z.json",
+          "p50": 2.79675,
+          "p95": 3.8351875,
+          "engineP50": 0.703,
+          "repeatP50": [
+            2.860417,
+            2.701125,
+            2.7775,
+            2.816
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094828Z.json",
+          "p50": 5.2321875,
+          "p95": 7.7578545000000005,
+          "engineP50": 1.27,
+          "repeatP50": [
+            3.500959,
+            6.782333,
+            4.754625,
+            5.70975
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094908Z.json",
+          "p50": 7.8268545,
+          "p95": 14.304270500000001,
+          "engineP50": 1.841,
+          "repeatP50": [
+            9.337084,
+            8.363,
+            7.290709,
+            6.336917
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094954Z.json",
+          "p50": 4.307145500000001,
+          "p95": 6.511041499999999,
+          "engineP50": 1.075,
+          "repeatP50": [
+            4.118375,
+            4.576542,
+            3.847,
+            4.495916
+          ]
+        },
+        {
+          "file": "bench-256-20260917T095031Z.json",
+          "p50": 4.256375,
+          "p95": 5.8185,
+          "engineP50": 1.0575,
+          "repeatP50": [
+            4.182791,
+            4.323209,
+            4.26975,
+            4.243
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 256,
+      "profile": "RULES",
+      "engine": "go-http",
+      "p50": 3.892646,
+      "range": [
+        2.066208,
+        5.411833
+      ],
+      "p95": 5.927854,
+      "engineP50": 0.6085,
+      "engineRange": [
+        0.3315,
+        0.8185
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-256-20260917T094758Z.json",
+          "p50": 2.066208,
+          "p95": 3.334646,
+          "engineP50": 0.3315,
+          "repeatP50": [
+            1.742208,
+            2.094083,
+            2.43175,
+            2.038333
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094828Z.json",
+          "p50": 4.0673335,
+          "p95": 6.175646,
+          "engineP50": 0.6385,
+          "repeatP50": [
+            3.250958,
+            4.459667,
+            3.675,
+            4.513958
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094908Z.json",
+          "p50": 5.411833,
+          "p95": 7.8155,
+          "engineP50": 0.8185,
+          "repeatP50": [
+            5.175583,
+            5.003583,
+            5.668333,
+            5.648083
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094954Z.json",
+          "p50": 3.8117085,
+          "p95": 5.4858545,
+          "engineP50": 0.608,
+          "repeatP50": [
+            4.050625,
+            3.891458,
+            3.501458,
+            3.731959
+          ]
+        },
+        {
+          "file": "bench-256-20260917T095031Z.json",
+          "p50": 3.892646,
+          "p95": 5.927854,
+          "engineP50": 0.6085,
+          "repeatP50": [
+            4.344833,
+            3.566709,
+            3.651208,
+            4.134084
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 256,
+      "profile": "RULES",
+      "engine": "go-native",
+      "p50": 2.7577084999999997,
+      "range": [
+        1.795208,
+        4.603333
+      ],
+      "p95": 4.6028335,
+      "engineP50": 0.0235,
+      "engineRange": [
+        0.015,
+        0.037500000000000006
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-256-20260917T094758Z.json",
+          "p50": 1.795208,
+          "p95": 2.5335,
+          "engineP50": 0.015,
+          "repeatP50": [
+            1.802833,
+            2.094042,
+            1.698042,
+            1.787583
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094828Z.json",
+          "p50": 3.2523540000000004,
+          "p95": 4.930563,
+          "engineP50": 0.027,
+          "repeatP50": [
+            3.49725,
+            3.007458,
+            3.864541,
+            2.732583
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094908Z.json",
+          "p50": 4.603333,
+          "p95": 7.0918125,
+          "engineP50": 0.037500000000000006,
+          "repeatP50": [
+            5.08925,
+            3.828208,
+            4.117416,
+            6.299334
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094954Z.json",
+          "p50": 2.7343335,
+          "p95": 4.6028335,
+          "engineP50": 0.0235,
+          "repeatP50": [
+            2.725375,
+            3.038416,
+            2.676583,
+            2.743292
+          ]
+        },
+        {
+          "file": "bench-256-20260917T095031Z.json",
+          "p50": 2.7577084999999997,
+          "p95": 4.5592500000000005,
+          "engineP50": 0.0225,
+          "repeatP50": [
+            2.355125,
+            2.841958,
+            3.234458,
+            2.673459
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 256,
+      "profile": "ENSEMBLE",
+      "engine": "php",
+      "p50": 2.8861875,
+      "range": [
+        1.7624585000000002,
+        3.770875
+      ],
+      "p95": 4.4702085,
+      "engineP50": 0.042,
+      "engineRange": [
+        0.027999999999999997,
+        0.0485
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-256-20260917T094758Z.json",
+          "p50": 1.7624585000000002,
+          "p95": 2.5766875000000002,
+          "engineP50": 0.027999999999999997,
+          "repeatP50": [
+            1.467875,
+            1.870834,
+            1.654083,
+            3.06275
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094828Z.json",
+          "p50": 3.353125,
+          "p95": 5.397854499999999,
+          "engineP50": 0.047,
+          "repeatP50": [
+            2.975958,
+            3.243042,
+            6.365334,
+            3.463208
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094908Z.json",
+          "p50": 3.770875,
+          "p95": 6.1595625,
+          "engineP50": 0.0485,
+          "repeatP50": [
+            4.47725,
+            3.16375,
+            4.260459,
+            3.281291
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094954Z.json",
+          "p50": 2.8861875,
+          "p95": 4.4702085,
+          "engineP50": 0.042,
+          "repeatP50": [
+            2.942792,
+            2.886542,
+            2.885833,
+            2.666333
+          ]
+        },
+        {
+          "file": "bench-256-20260917T095031Z.json",
+          "p50": 2.4795625,
+          "p95": 4.1416665,
+          "engineP50": 0.041,
+          "repeatP50": [
+            2.615625,
+            2.3435,
+            2.294333,
+            2.949625
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 256,
+      "profile": "ENSEMBLE",
+      "engine": "php-http",
+      "p50": 4.486146,
+      "range": [
+        3.374854,
+        5.8205415
+      ],
+      "p95": 6.2437915,
+      "engineP50": 1.124,
+      "engineRange": [
+        0.8394999999999999,
+        1.4495
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-256-20260917T094758Z.json",
+          "p50": 3.374854,
+          "p95": 5.3115005,
+          "engineP50": 0.8394999999999999,
+          "repeatP50": [
+            3.313291,
+            2.521042,
+            3.436417,
+            5.980125
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094828Z.json",
+          "p50": 5.8205415,
+          "p95": 7.704396,
+          "engineP50": 1.4495,
+          "repeatP50": [
+            5.42075,
+            5.681333,
+            5.95975,
+            6.453208
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094908Z.json",
+          "p50": 5.819687,
+          "p95": 7.9218955,
+          "engineP50": 1.445,
+          "repeatP50": [
+            6.178625,
+            6.033083,
+            5.341917,
+            5.606291
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094954Z.json",
+          "p50": 4.486146,
+          "p95": 6.1313335,
+          "engineP50": 1.1075,
+          "repeatP50": [
+            4.46175,
+            4.510542,
+            5.5995,
+            4.235834
+          ]
+        },
+        {
+          "file": "bench-256-20260917T095031Z.json",
+          "p50": 4.326167,
+          "p95": 6.2437915,
+          "engineP50": 1.124,
+          "repeatP50": [
+            4.305042,
+            4.347292,
+            4.290875,
+            5.162625
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 256,
+      "profile": "ENSEMBLE",
+      "engine": "go-http",
+      "p50": 3.823104,
+      "range": [
+        2.5175834999999998,
+        4.9286875000000006
+      ],
+      "p95": 5.757479,
+      "engineP50": 0.602,
+      "engineRange": [
+        0.40800000000000003,
+        0.786
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-256-20260917T094758Z.json",
+          "p50": 2.5175834999999998,
+          "p95": 3.736146,
+          "engineP50": 0.40800000000000003,
+          "repeatP50": [
+            2.6745,
+            2.360667,
+            2.276042,
+            3.33125
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094828Z.json",
+          "p50": 4.9286875000000006,
+          "p95": 6.864625,
+          "engineP50": 0.786,
+          "repeatP50": [
+            4.302459,
+            5.163375,
+            4.921833,
+            4.935542
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094908Z.json",
+          "p50": 4.503187499999999,
+          "p95": 6.522896,
+          "engineP50": 0.7204999999999999,
+          "repeatP50": [
+            4.024208,
+            4.65025,
+            4.718416,
+            4.356125
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094954Z.json",
+          "p50": 3.823104,
+          "p95": 5.757479,
+          "engineP50": 0.602,
+          "repeatP50": [
+            3.840041,
+            3.526333,
+            3.806167,
+            4.1315
+          ]
+        },
+        {
+          "file": "bench-256-20260917T095031Z.json",
+          "p50": 3.7577920000000002,
+          "p95": 5.295104,
+          "engineP50": 0.593,
+          "repeatP50": [
+            3.7165,
+            3.995083,
+            3.799084,
+            3.296041
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 256,
+      "profile": "ENSEMBLE",
+      "engine": "go-native",
+      "p50": 2.9693750000000003,
+      "range": [
+        1.8547915,
+        3.155771
+      ],
+      "p95": 4.7763545,
+      "engineP50": 0.035,
+      "engineRange": [
+        0.0215,
+        0.037000000000000005
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-256-20260917T094758Z.json",
+          "p50": 1.8547915,
+          "p95": 2.777146,
+          "engineP50": 0.0215,
+          "repeatP50": [
+            1.936958,
+            1.772625,
+            1.761708,
+            2.698167
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094828Z.json",
+          "p50": 3.155771,
+          "p95": 5.074792,
+          "engineP50": 0.037000000000000005,
+          "repeatP50": [
+            3.247583,
+            3.53875,
+            2.8795,
+            3.063959
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094908Z.json",
+          "p50": 2.9693750000000003,
+          "p95": 4.7860005,
+          "engineP50": 0.035,
+          "repeatP50": [
+            2.911792,
+            2.822875,
+            3.402667,
+            3.026958
+          ]
+        },
+        {
+          "file": "bench-256-20260917T094954Z.json",
+          "p50": 3.070396,
+          "p95": 4.7763545,
+          "engineP50": 0.035500000000000004,
+          "repeatP50": [
+            3.06625,
+            2.437417,
+            3.929042,
+            3.074542
+          ]
+        },
+        {
+          "file": "bench-256-20260917T095031Z.json",
+          "p50": 2.767854,
+          "p95": 4.347811999999999,
+          "engineP50": 0.033,
+          "repeatP50": [
+            2.81625,
+            2.941208,
+            2.719458,
+            2.597542
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 4096,
+      "profile": "RULES",
+      "engine": "php",
+      "p50": 2.8721875,
+      "range": [
+        2.276396,
+        3.3014375
+      ],
+      "p95": 4.6822289999999995,
+      "engineP50": 0.009,
+      "engineRange": [
+        0.008,
+        0.010499999999999999
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-4096-20260917T095113Z.json",
+          "p50": 2.6693540000000002,
+          "p95": 4.6822289999999995,
+          "engineP50": 0.009,
+          "repeatP50": [
+            3.229625,
+            2.565416,
+            2.708666,
+            2.630042
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095149Z.json",
+          "p50": 2.897271,
+          "p95": 4.460354,
+          "engineP50": 0.01,
+          "repeatP50": [
+            7.597167,
+            3.032292,
+            2.743875,
+            2.76225
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095237Z.json",
+          "p50": 2.8721875,
+          "p95": 5.8932915,
+          "engineP50": 0.009,
+          "repeatP50": [
+            2.282375,
+            2.839875,
+            2.9045,
+            3.952834
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095318Z.json",
+          "p50": 3.3014375,
+          "p95": 7.1976665,
+          "engineP50": 0.010499999999999999,
+          "repeatP50": [
+            2.059167,
+            3.332042,
+            3.270833,
+            4.031709
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095408Z.json",
+          "p50": 2.276396,
+          "p95": 4.4491465,
+          "engineP50": 0.008,
+          "repeatP50": [
+            1.903875,
+            3.271917,
+            2.035917,
+            2.516875
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 4096,
+      "profile": "RULES",
+      "engine": "php-http",
+      "p50": 4.843167,
+      "range": [
+        3.8401875,
+        5.1161460000000005
+      ],
+      "p95": 7.3777915,
+      "engineP50": 1.1600000000000001,
+      "engineRange": [
+        0.949,
+        1.2595
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-4096-20260917T095113Z.json",
+          "p50": 4.8924585,
+          "p95": 7.3777915,
+          "engineP50": 1.189,
+          "repeatP50": [
+            5.945666,
+            5.064208,
+            4.720709,
+            4.380458
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095149Z.json",
+          "p50": 4.5415624999999995,
+          "p95": 6.8874165000000005,
+          "engineP50": 1.1125,
+          "repeatP50": [
+            8.215583,
+            4.238292,
+            4.6565,
+            4.426625
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095237Z.json",
+          "p50": 5.1161460000000005,
+          "p95": 8.898979,
+          "engineP50": 1.2595,
+          "repeatP50": [
+            4.9715,
+            4.941875,
+            5.260792,
+            6.351958
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095318Z.json",
+          "p50": 4.843167,
+          "p95": 8.416938,
+          "engineP50": 1.1600000000000001,
+          "repeatP50": [
+            3.655,
+            3.386,
+            10.905458,
+            6.031334
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095408Z.json",
+          "p50": 3.8401875,
+          "p95": 6.208583,
+          "engineP50": 0.949,
+          "repeatP50": [
+            2.753084,
+            3.668583,
+            4.011792,
+            4.389
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 4096,
+      "profile": "RULES",
+      "engine": "go-http",
+      "p50": 3.886021,
+      "range": [
+        3.484417,
+        4.3430835000000005
+      ],
+      "p95": 6.6767085,
+      "engineP50": 0.6065,
+      "engineRange": [
+        0.5635,
+        0.6805000000000001
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-4096-20260917T095113Z.json",
+          "p50": 3.6567085,
+          "p95": 5.0029585,
+          "engineP50": 0.569,
+          "repeatP50": [
+            3.771208,
+            3.703917,
+            3.6095,
+            3.1565
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095149Z.json",
+          "p50": 4.3430835000000005,
+          "p95": 7.0444165000000005,
+          "engineP50": 0.6805000000000001,
+          "repeatP50": [
+            4.456,
+            4.001875,
+            4.293125,
+            4.393042
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095237Z.json",
+          "p50": 4.259042000000001,
+          "p95": 6.6767085,
+          "engineP50": 0.6725000000000001,
+          "repeatP50": [
+            4.316125,
+            4.113541,
+            4.201959,
+            6.236709
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095318Z.json",
+          "p50": 3.886021,
+          "p95": 7.915687999999999,
+          "engineP50": 0.6065,
+          "repeatP50": [
+            3.05175,
+            3.283875,
+            4.488167,
+            8.704541
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095408Z.json",
+          "p50": 3.484417,
+          "p95": 6.3345835,
+          "engineP50": 0.5635,
+          "repeatP50": [
+            2.342458,
+            4.496333,
+            3.676959,
+            3.291875
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 4096,
+      "profile": "RULES",
+      "engine": "go-native",
+      "p50": 2.8818755,
+      "range": [
+        2.611021,
+        3.0361455
+      ],
+      "p95": 4.645771,
+      "engineP50": 0.0245,
+      "engineRange": [
+        0.0205,
+        0.025
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-4096-20260917T095113Z.json",
+          "p50": 2.611021,
+          "p95": 3.7983335,
+          "engineP50": 0.0205,
+          "repeatP50": [
+            2.997834,
+            2.552792,
+            2.66925,
+            2.332292
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095149Z.json",
+          "p50": 3.0361455,
+          "p95": 4.645771,
+          "engineP50": 0.0245,
+          "repeatP50": [
+            3.012834,
+            3.027041,
+            3.1375,
+            3.04525
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095237Z.json",
+          "p50": 2.984979,
+          "p95": 4.604729,
+          "engineP50": 0.025,
+          "repeatP50": [
+            3.086291,
+            2.883667,
+            2.80375,
+            3.31725
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095318Z.json",
+          "p50": 2.8818755,
+          "p95": 8.151729,
+          "engineP50": 0.025,
+          "repeatP50": [
+            1.78,
+            3.110667,
+            2.653084,
+            5.624291
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095408Z.json",
+          "p50": 2.8149165,
+          "p95": 7.204791500000001,
+          "engineP50": 0.023,
+          "repeatP50": [
+            2.618375,
+            3.140458,
+            3.011458,
+            2.58125
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 4096,
+      "profile": "ENSEMBLE",
+      "engine": "php",
+      "p50": 3.713458,
+      "range": [
+        3.6385,
+        4.613021
+      ],
+      "p95": 6.503083500000001,
+      "engineP50": 0.5025,
+      "engineRange": [
+        0.473,
+        0.525
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-4096-20260917T095113Z.json",
+          "p50": 3.6385,
+          "p95": 6.503083500000001,
+          "engineP50": 0.505,
+          "repeatP50": [
+            3.6055,
+            5.073083,
+            3.5475,
+            3.6715
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095149Z.json",
+          "p50": 3.7134795,
+          "p95": 5.5030005,
+          "engineP50": 0.5025,
+          "repeatP50": [
+            3.604458,
+            3.790834,
+            3.636125,
+            3.94075
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095237Z.json",
+          "p50": 3.713458,
+          "p95": 6.561,
+          "engineP50": 0.473,
+          "repeatP50": [
+            6.187417,
+            3.187458,
+            4.091083,
+            3.335833
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095318Z.json",
+          "p50": 4.613021,
+          "p95": 9.418437,
+          "engineP50": 0.525,
+          "repeatP50": [
+            5.0865,
+            4.139542,
+            6.162291,
+            3.717208
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095408Z.json",
+          "p50": 3.694146,
+          "p95": 6.4905,
+          "engineP50": 0.4845,
+          "repeatP50": [
+            3.930542,
+            3.960708,
+            3.383167,
+            3.45775
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 4096,
+      "profile": "ENSEMBLE",
+      "engine": "php-http",
+      "p50": 5.5110209999999995,
+      "range": [
+        5.054854000000001,
+        6.2129585
+      ],
+      "p95": 8.988958499999999,
+      "engineP50": 1.7189999999999999,
+      "engineRange": [
+        1.608,
+        1.903
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-4096-20260917T095113Z.json",
+          "p50": 5.054854000000001,
+          "p95": 6.7787505,
+          "engineP50": 1.608,
+          "repeatP50": [
+            5.8915,
+            4.848292,
+            5.137416,
+            4.972292
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095149Z.json",
+          "p50": 5.5110209999999995,
+          "p95": 8.5317705,
+          "engineP50": 1.7805,
+          "repeatP50": [
+            5.229334,
+            6.011959,
+            5.524959,
+            5.497083
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095237Z.json",
+          "p50": 5.7589585,
+          "p95": 10.3574165,
+          "engineP50": 1.7189999999999999,
+          "repeatP50": [
+            8.838583,
+            6.167125,
+            5.350792,
+            5.152792
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095318Z.json",
+          "p50": 6.2129585,
+          "p95": 9.1243335,
+          "engineP50": 1.903,
+          "repeatP50": [
+            8.606666,
+            6.757542,
+            5.356292,
+            5.668375
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095408Z.json",
+          "p50": 5.368396000000001,
+          "p95": 8.988958499999999,
+          "engineP50": 1.6280000000000001,
+          "repeatP50": [
+            5.40475,
+            5.332042,
+            5.187084,
+            6.007709
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 4096,
+      "profile": "ENSEMBLE",
+      "engine": "go-http",
+      "p50": 4.3167915,
+      "range": [
+        4.165958,
+        5.7823955
+      ],
+      "p95": 6.879396,
+      "engineP50": 0.8365,
+      "engineRange": [
+        0.825,
+        1.034
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-4096-20260917T095113Z.json",
+          "p50": 4.165958,
+          "p95": 5.966833,
+          "engineP50": 0.829,
+          "repeatP50": [
+            4.173083,
+            4.158833,
+            3.990333,
+            4.673125
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095149Z.json",
+          "p50": 4.560167,
+          "p95": 6.374729,
+          "engineP50": 0.8725,
+          "repeatP50": [
+            4.882542,
+            5.081083,
+            4.237792,
+            4.018209
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095237Z.json",
+          "p50": 4.3167915,
+          "p95": 7.87725,
+          "engineP50": 0.8365,
+          "repeatP50": [
+            4.389666,
+            4.322,
+            4.311583,
+            4.082083
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095318Z.json",
+          "p50": 5.7823955,
+          "p95": 10.778104500000001,
+          "engineP50": 1.034,
+          "repeatP50": [
+            7.257,
+            5.521041,
+            3.920708,
+            6.04375
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095408Z.json",
+          "p50": 4.233875,
+          "p95": 6.879396,
+          "engineP50": 0.825,
+          "repeatP50": [
+            3.664958,
+            4.473834,
+            3.993916,
+            5.236125
+          ]
+        }
+      ]
+    },
+    {
+      "trees": 4096,
+      "profile": "ENSEMBLE",
+      "engine": "go-native",
+      "p50": 3.1724170000000003,
+      "range": [
+        2.9983125,
+        3.5152080000000003
+      ],
+      "p95": 5.354646000000001,
+      "engineP50": 0.21300000000000002,
+      "engineRange": [
+        0.192,
+        0.2165
+      ],
+      "byCampaign": [
+        {
+          "file": "bench-4096-20260917T095113Z.json",
+          "p50": 3.1724170000000003,
+          "p95": 5.7899795,
+          "engineP50": 0.2145,
+          "repeatP50": [
+            2.711292,
+            3.038625,
+            3.306209,
+            3.857958
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095149Z.json",
+          "p50": 3.458854,
+          "p95": 5.3171669999999995,
+          "engineP50": 0.2165,
+          "repeatP50": [
+            2.98775,
+            3.339125,
+            4.128333,
+            3.578583
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095237Z.json",
+          "p50": 2.9983125,
+          "p95": 4.944396,
+          "engineP50": 0.192,
+          "repeatP50": [
+            2.824416,
+            2.9875,
+            3.014542,
+            3.009125
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095318Z.json",
+          "p50": 3.5152080000000003,
+          "p95": 6.132146,
+          "engineP50": 0.21300000000000002,
+          "repeatP50": [
+            5.218708,
+            3.793416,
+            3.237,
+            2.843959
+          ]
+        },
+        {
+          "file": "bench-4096-20260917T095408Z.json",
+          "p50": 3.140375,
+          "p95": 5.354646000000001,
+          "engineP50": 0.203,
+          "repeatP50": [
+            2.888875,
+            3.391875,
+            2.524375,
+            3.618541
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+# Boundary Lab Caddyfile.
+#
+# Written out rather than relying on the image default, because worker mode is part of the argument
+# this repository makes and it should be readable rather than hidden in an environment variable.
+
+{
+	{$CADDY_GLOBAL_OPTIONS}
+
+	# Admin API stays on so workers can be restarted gracefully without restarting the container:
+	#   curl -X POST http://localhost:2019/frankenphp/workers/restart
+	# Useful when sweeping BOUNDARY_LAB_TREE_COUNT during a benchmark run.
+	admin :2019
+
+	frankenphp {
+		# Worker mode is what allows the PHP engine to hold a warm scoring model in a static
+		# property between requests. Without it the model is rebuilt on every authorization, and
+		# the PHP engine would be measured doing work no real deployment repeats.
+		#
+		# Written as a block rather than the `worker <file> <num>` shorthand so the failure policy
+		# can be set: max_consecutive_failures is a `worker` subdirective, not a `frankenphp` one.
+		worker {
+			file {$WORKER_SCRIPT:/app/public/index.php}
+			num {$API_WORKERS:4}
+
+			# A worker that dies repeatedly is a bug to surface, not to paper over. Ten
+			# consecutive failures and the server gives up instead of crash-looping quietly.
+			max_consecutive_failures 10
+		}
+	}
+}
+
+{$CADDY_EXTRA_CONFIG}
+
+# Binding to :80 by name keeps automatic HTTPS off, which is what we want: the demos are three
+# curls against localhost and a self-signed certificate prompt in front of an audience is noise.
+{$SERVER_NAME:localhost} {
+	log {
+		format {$CADDY_SERVER_LOG_FORMAT:json}
+	}
+
+	root {$SERVER_ROOT:/app/public}
+
+	# zstd and gzip only. Brotli would need github.com/dunglas/caddy-cbrotli linked into the custom
+	# binary, and it buys nothing for a few hundred bytes of JSON-LD.
+	encode zstd gzip
+
+	php_server {
+		# Every request is routed through the worker, including 404s, so the correlation-id and
+		# Server-Timing listeners run on error responses too — which are the responses you most
+		# want a correlation id on.
+		try_files {path} index.php
+	}
+}

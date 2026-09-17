@@ -1,0 +1,199 @@
+:root { --ink: #172b4d; --muted: #48617c; --hub: #2466c4; --php: #6551b3; --go: #087e91; --line: #cad9ee; }
+/* Cover-only palette trial, inspired by Treezor's public website.
+   Geometry, typography, content and all other slides remain unchanged. */
+.slidev-layout.treezor-cover {
+  --ink: #172b4d;
+  --muted: #48617c;
+  --hub: #316bd5;
+  --line: #cad9ee;
+  background-image: linear-gradient(100deg, #e4eefb, #f1fbfa);
+  position: relative;
+  isolation: isolate;
+  color: var(--ink);
+}
+.slidev-layout.treezor-cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: #bfdff3;
+  mask: url('/treezor-tree-grey.svg') 210px 90px / 1450px auto no-repeat;
+  -webkit-mask: url('/treezor-tree-grey.svg') 210px 90px / 1450px auto no-repeat;
+}
+.slidev-layout.treezor-cover .callout strong {
+  background: linear-gradient(100deg, #2476e5, #149fa9);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.slidev-slide-content:has(.slidev-page:not([style*="display: none"]) .treezor-cover) > .deck-footer {
+  color: #48617c;
+  border-color: #cad9ee;
+}
+.slidev-slide-content:has(.slidev-page:not([style*="display: none"]) .treezor-cover) > .deck-footer .treezor-on-dark { display: none; }
+.slidev-slide-content:has(.slidev-page:not([style*="display: none"]) .treezor-cover) > .deck-footer .treezor-on-light { display: block; }
+.slidev-layout .speaker-grid { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 42px; align-items: center; }
+.slidev-layout .speaker-contact { display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--ink); font-size: 18px; border: 0; text-decoration: none; }
+.slidev-layout .speaker-contact img { display: block; width: 190px; height: 190px; }
+.slidev-layout { background: #f8fbff; color: var(--ink); padding: 42px 54px 48px; font-family: 'Helvetica Neue', Arial, sans-serif; }
+.slidev-layout h1 { font-size: 40px; line-height: 1.12; font-weight: 720; letter-spacing: -1.4px; margin: 0 0 26px; max-width: 850px; }
+.slidev-layout p, .slidev-layout li { font-size: 23px; line-height: 1.4; }
+.slidev-layout p { margin: 14px 0; }
+.slidev-layout strong { color: var(--hub); font-weight: 650; }
+.slidev-layout .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--hub); margin-bottom: 17px; }
+.slidev-layout .sub { color: var(--muted); font-size: 20px; }
+.slidev-layout .small { color: var(--muted); font-size: 17px; line-height: 1.45; }
+.slidev-layout .foot { position: absolute; left: 54px; right: 54px; bottom: 22px; display: flex; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 9px; font-size: 11px; letter-spacing: 1px; color: var(--muted); }
+.slidev-layout .punch { font-size: 48px; line-height: 1.13; font-weight: 700; letter-spacing: -1.5px; margin-top: 25px; }
+.slidev-layout.cover h1 { font-size: 62px; max-width: 820px; line-height: 1.03; margin: 22px 0; }
+.slidev-layout.cover .subtitle { font-size: 28px; color: var(--muted); }
+.slidev-layout .signature { margin-top: 32px; font-size: 19px; }
+.slidev-layout .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 30px; align-items: start; }
+.slidev-layout .label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px; color: var(--muted); margin-bottom: 12px; }
+.slidev-layout .callout { border-left: 4px solid var(--hub); padding: 8px 0 8px 20px; margin: 16px 0; font-size: 25px; line-height: 1.35; }
+.slidev-layout .receipt { background: #f1eedf; color: #17232d; padding: 24px 26px; border-top: 7px solid var(--hub); font-family: Menlo, monospace; }
+.slidev-layout .receipt .label { color: #42515c; }
+.slidev-layout .receipt .amount { font-size: 49px; font-weight: 700; letter-spacing: -2px; margin: 12px 0; }
+.slidev-layout .receipt p { font-size: 18px; }
+.slidev-layout .receipt strong { color: #263e13; }
+.slidev-layout .steps { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 26px; margin-top: 35px; }
+.slidev-layout .step { border-top: 3px solid var(--line); padding-top: 15px; }
+.slidev-layout .step strong { font-size: 30px; display: block; margin-bottom: 13px; }
+.slidev-layout .step p { font-size: 21px; }
+.slidev-layout table { width: 100%; font-size: 20px; margin-top: 22px; border-collapse: collapse; }
+.slidev-layout th { font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); text-align: left; }
+.slidev-layout td, .slidev-layout th { padding: 10px 10px; border-bottom: 1px solid var(--line); }
+.slidev-layout .slidev-code { font-size: 18px !important; line-height: 1.48 !important; padding: 19px !important; background: #192635 !important; border: 1px solid var(--line); }
+.slidev-layout pre { margin: 14px 0 !important; }
+.slidev-layout .compact .slidev-code { font-size: 16px !important; }
+.slidev-layout .tag { display: inline-block; padding: 5px 10px; border: 1px solid var(--line); color: var(--muted); font-size: 13px; letter-spacing: .6px; margin-top: 12px; }
+.slidev-layout .demo { color: var(--hub); border-color: #6e8746; }
+.slidev-layout .flow { display: flex; align-items: center; gap: 15px; margin: 20px 0; }
+.slidev-layout .flow > div { flex: 1; border-top: 3px solid var(--hub); padding-top: 14px; font-size: 22px; }
+.slidev-layout .flow > span { font-size: 24px; color: var(--muted); }
+.slidev-layout .no { color: #ffaf99; }
+.slidev-layout .php { color: var(--php); }
+.slidev-layout .go { color: var(--go); }
+.slidev-layout .hub { color: var(--hub); }
+.slidev-layout .big-number { font-size: 100px; line-height: 1; font-weight: 750; letter-spacing: -6px; color: var(--hub); }
+.slidev-layout.light { background: #ecebdf; color: #18232d; }
+.slidev-layout.light strong, .slidev-layout.light .eyebrow { color: #365e17; }
+.slidev-layout.light .sub, .slidev-layout.light .small { color: #435564; }
+.slidev-layout.light .callout { border-color: #507e25; }
+.slidev-layout.light .foot { color: #53626a; border-color: #b8c1b7; }
+.slidev-layout.light .big-number { color: #365e17; }
+.slidev-layout.light .label, .slidev-layout.light th { color: #435564; }
+
+/* Full-page chapter titles make phase changes visible from the back of the room. */
+.slidev-layout.chapter { padding: 55px 64px; background: #c7f36b; color: #152522; }
+.slidev-layout.chapter-php { background: #c9baf5; color: #211c38; }
+.slidev-layout.chapter-go { background: #91deea; color: #122f38; }
+.slidev-layout .chapter-index { font: 600 22px Menlo, monospace; letter-spacing: 2px; margin-bottom: 45px; }
+.slidev-layout.chapter h1 { font-size: 76px; line-height: 1.04; letter-spacing: -3px; max-width: 850px; margin-bottom: 28px; }
+.slidev-layout .chapter-sub { font-size: 25px; line-height: 1.3; max-width: 780px; opacity: 1; color: inherit; }
+.slidev-slide-content:has(.slidev-page:not([style*="display: none"]) .chapter) > .deck-footer { color: #243e44; border-color: #243e4455; }
+.slidev-layout.demo-break { padding: 58px 64px; background: #172337; }
+.slidev-layout .demo-system { color: var(--hub); font-size: 22px; letter-spacing: .4px; }
+.slidev-layout.demo-break h1 { font-size: 112px; letter-spacing: -5px; line-height: 1; margin: 30px 0 18px; }
+.slidev-layout .demo-title { font-size: 37px; font-weight: 600; margin: 0 0 20px; opacity: 1; }
+.slidev-layout .demo-expectation { font-size: 24px; color: #c3cfdd; max-width: 790px; }
+.slidev-layout .demo-status { font-size: 15px; color: #aebbcf; margin-top: 30px; }
+.slidev-layout .aside-emoji { position: absolute; right: 60px; top: 51px; font-size: 31px; }
+.slidev-layout .demo-emoji { font-size: 30px; margin-left: 8px; }
+
+/* Three-step PHP walkthrough: keep code and captions above the footer. */
+.slidev-layout.php-walkthrough h1 { font-size: 36px; margin-bottom: 18px; }
+.slidev-layout.php-walkthrough .slidev-code { line-height: 1.3 !important; padding: 6px 12px !important; }
+.slidev-layout.php-walkthrough pre { margin: 10px 0 !important; }
+.slidev-layout.php-walkthrough .sub { font-size: 18px; margin: 10px 0; }
+
+.slidev-layout .finish-grid { display: grid; grid-template-columns: minmax(0, 1fr) 190px 190px; gap: 28px; align-items: center; margin-top: 38px; }
+.slidev-layout .finish-grid .punch { font-size: 38px; }
+.slidev-layout .finish-grid .speaker-contact { text-align: center; }
+
+/* Demo conclusions: evidence first, interpretation second. */
+.slidev-layout .demo-takeaway { margin: 32px 0 24px; }
+.slidev-layout .demo-takeaway > div { display: grid; grid-template-columns: 155px 1fr; gap: 24px; padding: 19px 0; border-top: 1px solid var(--line); }
+.slidev-layout .demo-takeaway span { color: var(--muted); font-size: 17px; padding-top: 5px; }
+.slidev-layout .demo-takeaway p { margin: 0; font-size: 23px; }
+
+.slidev-layout.authorization-code h1 { font-size: 36px; margin-bottom: 20px; }
+.slidev-layout.authorization-code .label { font-size: 11px; letter-spacing: .3px; margin: 8px 0; }
+.slidev-layout.authorization-code .slidev-code { font-size: 14px !important; line-height: 1.3 !important; padding: 10px !important; }
+.slidev-layout.authorization-code pre { margin: 8px 0 16px !important; }
+.slidev-layout.authorization-code .sub { font-size: 19px; }
+
+.slidev-layout.authorization-code .slidev-code { font-size: 13px !important; line-height: 1.2 !important; }
+.slidev-layout.authorization-code .small { font-size: 15px; line-height: 1.4; }
+
+.bench-pending { color: #89919f; font-weight: 400; }
+
+/* Expanded public contract keeps both fragments readable on a single slide. */
+.slidev-layout.public-contract h1 { margin-bottom: 16px; }
+.slidev-layout.public-contract .label { font-size: 11px; letter-spacing: .3px; margin-bottom: 8px; }
+.slidev-layout.public-contract .slidev-code { font-size: 13px !important; line-height: 1.24 !important; padding: 10px !important; }
+.slidev-layout.public-contract .slidev-code code,
+.slidev-layout.public-contract .slidev-code .line { line-height: 1.24 !important; }
+.slidev-layout.public-contract pre { margin: 0 !important; }
+.slidev-layout.public-contract .small { font-size: 13px; margin: 10px 0 4px; }
+.slidev-layout.public-contract .sub { font-size: 19px; margin: 4px 0; }
+.slidev-layout.grpc-option .slidev-code code,
+.slidev-layout.grpc-option .slidev-code .line { line-height: 1.2 !important; }
+.slidev-layout.grpc-option p { font-size: 20px; }
+.slidev-layout.grpc-option .sub { font-size: 18px; margin-top: 8px; }
+
+/* Long compiler paths remain visible during the native walkthrough. */
+.slidev-layout.native-build .slidev-code code, .slidev-layout.native-build .slidev-code .line { white-space: pre-wrap !important; overflow-wrap: anywhere; }
+
+.slidev-layout.native-build .slidev-code, .slidev-layout.native-build .slidev-code * { white-space: pre-wrap !important; overflow-wrap: anywhere !important; min-width: 0 !important; }
+
+/* Treezor-inspired palette: content stays light, phase changes use blue.
+   Only appearance changes; layout and slide content are preserved. */
+.slidev-layout.light { background: linear-gradient(100deg, #e4eefb, #f1fbfa); color: var(--ink); }
+.slidev-layout.light strong, .slidev-layout.light .eyebrow,
+.slidev-layout.light .big-number { color: var(--hub); }
+.slidev-layout.light .sub, .slidev-layout.light .small,
+.slidev-layout.light .label, .slidev-layout.light th { color: var(--muted); }
+.slidev-layout.light .callout { border-color: var(--hub); }
+.slidev-layout.light .foot { color: var(--muted); border-color: var(--line); }
+.slidev-layout .receipt { background: #eaf3ff; color: var(--ink); }
+.slidev-layout .receipt .label { color: var(--muted); }
+.slidev-layout .receipt strong { color: var(--hub); }
+.slidev-layout .demo { border-color: var(--hub); }
+.slidev-layout .no { color: #af3d38; }
+.bench-pending { color: #6d7c91; }
+.slidev-layout .slidev-code { color: #eff4f8; border-color: #354c68; }
+/* Inline code uses the slide palette, independently of dark code blocks. */
+.slidev-layout :not(pre) > code {
+  color: #174477;
+  background-color: #e3edfa;
+}
+.slidev-layout:is(.chapter, .demo-break) :not(pre) > code {
+  color: #ffffff;
+  background-color: #254c79;
+}
+.slidev-layout.chapter {
+  --ink: #ffffff; --muted: #e1efff; --hub: #b3f1f0;
+  background: linear-gradient(115deg, #174d9b, #2469c8); color: var(--ink);
+}
+.slidev-layout.chapter-php { background: linear-gradient(115deg, #173d78, #2865b5); }
+.slidev-layout.chapter-go { background: linear-gradient(115deg, #174d9b, #107786); }
+.slidev-layout.demo-break {
+  --ink: #ffffff; --muted: #d7e8fa; --hub: #91e4e6;
+  background: linear-gradient(110deg, #142d50, #1b4778); color: var(--ink);
+}
+.slidev-layout .demo-expectation, .slidev-layout .demo-status { color: var(--muted); }
+.slidev-layout:has(.finish-grid) { background: linear-gradient(100deg, #e4eefb, #f1fbfa); }
+.slidev-layout:is(.chapter, .demo-break):after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: #bde8fa; opacity: .07;
+  mask: url('/treezor-tree-grey.svg') 580px 140px / 850px auto no-repeat;
+  -webkit-mask: url('/treezor-tree-grey.svg') 580px 140px / 850px auto no-repeat;
+}
+.slidev-slide-content > .deck-footer { color: #48617c; border-color: #cad9ee; }
+.slidev-slide-content > .deck-footer .treezor-on-dark { display: none; }
+.slidev-slide-content > .deck-footer .treezor-on-light { display: block; }
+.slidev-slide-content:has(.slidev-page:not([style*="display: none"]) :is(.chapter, .demo-break)) > .deck-footer { color: #d7e8fa; border-color: #ffffff44; }
+.slidev-slide-content:has(.slidev-page:not([style*="display: none"]) :is(.chapter, .demo-break)) > .deck-footer .treezor-on-dark { display: block; }
+.slidev-slide-content:has(.slidev-page:not([style*="display: none"]) :is(.chapter, .demo-break)) > .deck-footer .treezor-on-light { display: none; }

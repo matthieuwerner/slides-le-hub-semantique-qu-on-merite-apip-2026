@@ -1,0 +1,17 @@
+{
+  "name": "boundary-lab-slides",
+  "private": true,
+  "type": "module",
+  "description": "API Platform Conference 2026 — API Platform as a stable semantic boundary",
+  "scripts": {
+    "dev": "slidev --open",
+    "build": "slidev build --out dist",
+    "export": "slidev export --output dist/boundary-lab.pdf --with-clicks",
+    "export-notes": "slidev export-notes --output dist/speaker-notes.pdf"
+  },
+  "dependencies": {
+    "@slidev/cli": "^52.1.0",
+    "@slidev/theme-default": "^0.25.0",
+    "vue": "^3.5.13"
+  }
+}

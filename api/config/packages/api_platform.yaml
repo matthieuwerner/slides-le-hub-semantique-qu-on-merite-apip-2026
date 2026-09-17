@@ -1,0 +1,32 @@
+api_platform:
+    title: Boundary Lab — Simulated Payment Authorization API
+    version: 1.0.0
+    description: >-
+        The public, stable, semantic boundary of a payment risk system.
+
+        This contract is identical across the four configurations demonstrated in the
+        repository: scoring in PHP in this process, scoring in a PHP or Go service over HTTP, and
+        scoring in a Go function compiled into this process. Nothing in this document changes
+        between them, and that is the point being made.
+
+        Which runtime served a request is reported in the standard Server-Timing response
+        header, deliberately not in the representation, so no client can begin to depend on it.
+
+    defaults:
+        stateless: true
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']
+
+    formats:
+        jsonld: ['application/ld+json']
+        json: ['application/json']
+
+    # RFC 9457 problem details for errors, matching what the internal Go service emits, so a
+    # client needs one error parser rather than two.
+    exception_to_status:
+        App\Domain\RiskEngineUnavailable: 503
+        App\Engine\UnknownEngineRequested: 400
+        App\Domain\Bank\BankConflict: 409
+        App\Domain\Bank\BankNotFound: 404
+        App\Domain\Bank\BankUnavailable: 503
+        Symfony\Component\Serializer\Exception\ExtraAttributesException: 400

@@ -1,0 +1,344 @@
+# The INTERNAL contract between the PHP application and the Go risk engine.
+#
+# This document is not the public API. The public API is owned by API Platform and described
+# by the JSON-LD / Hydra / OpenAPI documents it generates at /api. This file describes a
+# private link between two components we control and deploy together.
+#
+# The distinction is the whole argument of the talk:
+#
+#   - the PUBLIC contract is consumed by third parties that discover it at runtime, so it is
+#     late-bound, self-describing and must stay stable across refactors;
+#   - this INTERNAL contract is consumed by exactly one client that we generate, so it should
+#     be early-bound and is free to change whenever both sides are regenerated together.
+#
+# Treating both the same way is how teams end up versioning internal DTOs for no one.
+#
+# Both sides are derived from this file:
+#   PHP  -> a Jane-generated, type-safe client  (make contract-php)
+#   Go   -> asserted against this schema by go/internal/riskhttp/contract_test.go
+#
+# OpenAPI 3.0.3 rather than 3.1 because that is what jane-php/open-api-3 consumes.
+openapi: 3.0.3
+
+info:
+  title: Boundary Lab — internal risk engine
+  description: >-
+    Private scoring API. Deployed alongside its only client and versioned with it.
+    Not intended for third-party consumption.
+  version: 1.0.0
+  license:
+    name: MIT
+
+servers:
+  - url: http://risk-engine:8081
+    description: Service name inside the compose network
+
+paths:
+  /v1/merchants/{merchantId}:
+    get:
+      operationId: getMerchantProfile
+      summary: Read a synthetic merchant profile
+      parameters:
+        - name: merchantId
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        '200':
+          description: Synthetic merchant profile
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MerchantProfile'}
+        '404':
+          description: Unknown merchant
+  /v2/assess:
+    post:
+      operationId: assessRiskV2
+      summary: Same policy, private normalized score and renamed decision
+      parameters:
+        - name: X-Correlation-Id
+          in: header
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AssessRequest'}
+      responses:
+        '200':
+          description: Equivalent decision, score on an exact hundredth grid
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AssessResponseV2'}
+        '400':
+          description: Malformed request
+        '413':
+          description: Payload too large
+        '422':
+          description: Invalid input
+  /v1/assess:
+    post:
+      operationId: assessRisk
+      summary: Score a payment authorization request
+      description: >-
+        Returns a verdict for an enriched feature vector. Business refusals (an unsupported
+        currency, a sanctioned issuer) are returned as a 200 carrying a declined decision,
+        never as an error status: the caller needs the reason code, and an error status would
+        throw it away.
+      parameters:
+        - name: X-Correlation-Id
+          in: header
+          required: false
+          description: >-
+            Caller-supplied request identifier, echoed back in the response. Used by the lab
+            to prove which engine served a request without adding anything to the public API.
+          schema:
+            type: string
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssessRequest'
+      responses:
+        '200':
+          description: A verdict was produced
+          headers:
+            Server-Timing:
+              description: Computation time attributable to the engine itself
+              schema:
+                type: string
+            X-Correlation-Id:
+              description: Echo of the request identifier, when one was supplied
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssessResponse'
+        '400':
+          description: The body could not be parsed, or contained unknown fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '413':
+          description: The body exceeded the accepted size
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          description: The body was parsed but is structurally invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /healthz:
+    get:
+      operationId: health
+      summary: Liveness and model-readiness probe
+      description: >-
+        Returns 200 only once the scoring model has been materialised, so a load balancer
+        never routes a request that would pay the whole model build cost.
+      responses:
+        '200':
+          description: Ready to serve
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+
+components:
+  schemas:
+    MerchantProfile:
+      type: object
+      additionalProperties: false
+      required: [merchantId, displayName, country, settlementCurrency, riskTier, internalOwner]
+      properties:
+        merchantId: {type: string}
+        displayName: {type: string}
+        country: {type: string, pattern: '^[A-Z]{2}$'}
+        settlementCurrency: {type: string, pattern: '^[A-Z]{3}$'}
+        riskTier: {type: integer, minimum: 0, maximum: 3}
+        internalOwner: {type: string, description: 'Private routing information, not a public field'}
+    AssessResponseV2:
+      type: object
+      additionalProperties: false
+      required: [score, outcome, reason, engine]
+      properties:
+        score: {type: number, format: double, minimum: 0, maximum: 1, multipleOf: 0.01}
+        outcome: {type: string, enum: [ALLOW, REVIEW, DENY]}
+        reason: {type: string}
+        engine: {type: string, enum: [php-http, go-http]}
+    AssessRequest:
+      type: object
+      description: >-
+        The ENRICHED feature vector, not the raw authorization request. Enrichment (issuer
+        country, device velocity, merchant tier) happens in the caller so that every engine
+        receives identical input and no engine's measured cost includes a feature-store lookup.
+      additionalProperties: false
+      required:
+        - amountMinor
+        - currency
+        - country
+        - cardBin
+        - merchantId
+      properties:
+        amountMinor:
+          type: integer
+          format: int64
+          description: >-
+            Amount in minor units. Integer, never a decimal: 42069 cents is exact, 420.69 is
+            not representable in binary floating point, and a threshold comparison on an
+            inexact amount eventually disagrees with itself.
+          example: 42069
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+          description: >-
+            ISO 4217 alpha-3. Deliberately a pattern rather than an enum of accepted
+            currencies: a well-formed currency we do not settle is a business decline with a
+            reason code, not a malformed request.
+          example: EUR
+        country:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          description: ISO 3166-1 alpha-2 acquirer country.
+          example: FR
+        cardBin:
+          type: string
+          pattern: '^[0-9]{6,8}$'
+          description: >-
+            Bank Identification Number. The 8-digit ceiling is a security control, not
+            formatting: a longer value is a PAN, and this schema makes one unrepresentable.
+          example: '497010'
+        merchantId:
+          type: string
+          minLength: 1
+          maxLength: 64
+          example: merchant_42
+        deviceId:
+          type: string
+          maxLength: 64
+          description: Empty or absent means the device is unknown, which is itself a risk factor.
+          example: device_123
+        binCountry:
+          type: string
+          nullable: true
+          pattern: '^[A-Z]{2}$'
+          description: >-
+            Issuer country, or null when the BIN is not in the reference table. Null is NOT
+            treated as cross-border: unknown is reported under its own reason code so a
+            data-quality gap cannot hide behind a plausible risk factor.
+          example: FR
+        deviceTxCount24h:
+          type: integer
+          format: int64
+          minimum: 0
+          default: 0
+          description: Transactions seen for this device in the last 24 hours.
+          example: 1
+        merchantRiskTier:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 3
+          default: 0
+          example: 0
+        profile:
+          type: string
+          enum: [RULES, ENSEMBLE]
+          default: RULES
+          description: >-
+            RULES is the realistic scenario and the default. ENSEMBLE evaluates a decision-tree
+            ensemble and exists to represent a genuinely CPU-bound scoring path.
+
+    AssessResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - riskScore
+        - status
+        - decisionReason
+        - engine
+      properties:
+        riskScore:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 100
+          example: 12
+        status:
+          type: string
+          enum: [approved, challenged, declined]
+          description: >-
+            Three outcomes, not a boolean. "challenged" means step up to 3-D Secure, which is
+            the most common non-trivial outcome in real card traffic.
+          example: approved
+        decisionReason:
+          type: string
+          enum:
+            - LOW_RISK
+            - INVALID_AMOUNT
+            - UNSUPPORTED_CURRENCY
+            - AMOUNT_LIMIT_EXCEEDED
+            - SANCTIONED_ISSUER
+            - HIGH_AMOUNT
+            - CROSS_BORDER
+            - CURRENCY_COUNTRY_MISMATCH
+            - HIGH_RISK_BIN
+            - DEVICE_VELOCITY
+            - MERCHANT_RISK_TIER
+            - ROUND_AMOUNT
+            - UNKNOWN_DEVICE
+            - UNKNOWN_BIN
+            - FIRST_SEEN_DEVICE_HIGH_AMOUNT
+            - ENSEMBLE_MODEL
+          description: >-
+            The dominant risk factor, even when the risk verdict is approved. LOW_RISK means no contributing RULES factor.
+          example: LOW_RISK
+        engine:
+          type: string
+          description: >-
+            Which runtime produced this verdict. Present so the caller can prove which
+            boundary was crossed instead of trusting its own configuration.
+          example: go-http
+
+    Health:
+      type: object
+      additionalProperties: false
+      required: [status, engine]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        engine:
+          type: string
+          example: go-http
+
+    Problem:
+      type: object
+      description: RFC 9457 problem details, the same shape API Platform emits.
+      required: [type, title, status, detail]
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        violations:
+          type: array
+          items:
+            type: object
+            required: [field, detail]
+            properties:
+              field:
+                type: string
+              detail:
+                type: string
