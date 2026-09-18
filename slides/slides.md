@@ -379,19 +379,19 @@ La différence 12 / 0,12 reviendra dans la démo HTTP comme test d’une convers
 
 ### Le message de cette slide
 
-Expliquer le hub avec une phrase compréhensible, sans jargon supplémentaire.
+Répartir les responsabilités entre API Platform, notre code et le moteur.
 
 ### À dire
 
-Le client appelle toujours notre API de paiement. Nous y définissons les ressources et les opérations publiques. Derrière, notre code appelle le moteur de calcul et transforme sa réponse quand c’est nécessaire. API Platform nous aide à exposer ce modèle, à sérialiser les réponses et à publier sa description. Il ne devine pas la traduction et ne décide pas des règles bancaires. Le hub, dans ce talk, c’est ce point où nous maîtrisons ce que le client voit.
+Regardons ce que nous mettons dans cette façade. API Platform expose nos ressources et leurs opérations, sérialise les réponses et publie leur description. Notre code appelle le moteur et traduit son résultat. Le moteur, lui, fournit l’évaluation du risque. Nous écrivons les règles de décision et de conversion : le framework ne les déduit pas des données reçues.
 
 ### Appui visuel / conduite
 
-Pointer le client, le rectangle API Platform, puis le moteur. Ne pas détailler Provider et Processor ici.
+Pointer les responsabilités dans le rectangle central, puis le moteur. Le choix de placer une façade a déjà été expliqué sur le schéma des services. Ici, expliquer ce que chacun prend en charge, sans détailler Provider et Processor.
 
 ### Transition vers la suite
 
-Les trois noms cités dans ce schéma ont des rôles différents.
+Que contiennent les descriptions publiées par API Platform ?
 
 ### Réserve technique et sources
 
@@ -431,7 +431,7 @@ Donner un exemple mental pour chaque standard.
 
 ### À dire
 
-OpenAPI, c’est le document qui décrit quel appel faire, quelles données envoyer et quelles réponses recevoir. JSON-LD associe les noms de notre JSON à des identifiants de vocabulaire : le champ statut appartient ici à notre autorisation. Hydra fournit des conventions pour décrire des ressources, des opérations ou les liens d’une collection, par exemple vers la page suivante. API Platform publie ces descriptions. Elles aident à comprendre l’API, mais elles ne calculent ni le risque ni les conversions à notre place.
+Le YAML que nous venons de voir est un extrait OpenAPI : il décrit l’appel et les réponses possibles. JSON-LD permet d’identifier le vocabulaire auquel appartiennent les termes de la réponse. Hydra fournit notamment des conventions pour les ressources, les opérations et les liens de pagination. Ces noms répondent à des besoins différents. Dans un instant, nous suivrons le contexte JSON-LD d’une réponse réelle.
 
 ### Appui visuel / conduite
 
@@ -572,7 +572,7 @@ Expliquer l’idempotence par le problème du client.
 
 ### À dire
 
-Le client envoie sa demande, mais ne reçoit pas la réponse. Il ne sait pas si elle a été traitée. Nous lui permettons de la renvoyer avec la même clé. Pour le même compte et le même contenu, nous rendons la réponse initiale sans nouvelle réservation. S’il réutilise cette clé avec un autre montant, nous signalons un conflit. OpenAPI documente cette règle. Notre code l’applique et les tests vérifient ses effets.
+Le client envoie sa demande, mais ne reçoit pas la réponse. Il ne sait pas si elle a été traitée. Nous lui permettons de la renvoyer avec la même clé. Pour le même compte et le même contenu, nous rendons la réponse initiale sans nouvelle réservation. S’il réutilise cette clé avec un autre montant, nous signalons un conflit. La description affichée précise ces deux cas : une nouvelle tentative et une demande différente ne doivent pas produire le même effet.
 
 ### Appui visuel / conduite
 
@@ -689,7 +689,7 @@ Montrer ce que JSON-LD apporte réellement, sans lui attribuer de magie.
 
 ### À dire
 
-Dans ce document, le nom court status est relié à un terme de notre vocabulaire d’autorisation. Un autre service peut avoir lui aussi un champ status sans parler de la même chose. Le contexte donne une identité à ces termes. Ici, c’est notre vocabulaire local, pas un standard bancaire universel. Les définitions et le code restent nécessaires pour savoir ce qu’un statut implique. JSON-LD ne transforme pas automatiquement les données du moteur.
+Nous avons suivi l’adresse du contexte présente dans la réponse. Ici, status désigne précisément le statut de PaymentAuthorization. Un service marchand pourrait aussi appeler un champ status, avec une autre signification. Le contexte permet de distinguer ces termes en leur donnant des identifiants. Le vocabulaire montré appartient à notre API : il ne constitue pas un standard bancaire partagé avec les autres services.
 
 ### Appui visuel / conduite
 
@@ -789,7 +789,7 @@ Présenter le terrain commun, sans recommencer chaque cas.
 
 ### À dire
 
-Cette liste appartient aux trois cas. Nous pouvons lire un utilisateur et son solde, demander une autorisation, relire son état, puis comptabiliser le clearing. Les lectures exposent l’état du système ; les commandes le font évoluer. Ce sont ces opérations publiques que nous gardons. Nous ne réécrirons pas toute cette API quand nous changerons de moteur.
+Voici les appels que nous allons retrouver dans les scripts. Nous lisons d’abord l’utilisateur et le solde pour connaître le point de départ. Nous demandons une autorisation, puis nous pouvons relire son état. Enfin, le clearing comptabilise le débit. Les lectures du solde nous permettront d’observer les effets des commandes. Le GET du solde ne déplace aucun argent.
 
 ### Appui visuel / conduite
 
@@ -891,7 +891,7 @@ Transformer les promesses en observations vérifiables.
 
 ### À dire
 
-Nous avons décrit les engagements. Maintenant, nous les testons. D’abord ce que le client reçoit : les champs et les réponses attendues. Ensuite leur sens : le bon montant, la bonne décision, le bon motif. Enfin les effets : une réservation et aucun doublon au rejeu. Nous vérifions la réponse et le compte. Comparer les moteurs actuels ne suffit pas à prouver la compatibilité avec une ancienne version publiée : il faudrait aussi conserver cette référence.
+Pour notre paiement, qu’allons-nous observer ? La réponse doit annoncer la décision attendue et le montant de 420,69 euros. Mais une réponse correcte ne suffit pas : nous devons aussi lire le compte pour vérifier la réservation. Puis nous rejouons la demande et vérifions que cette réservation n’augmente pas. C’est ce lien entre réponse et effet sur le compte que résume le tableau.
 
 ### Appui visuel / conduite
 
@@ -965,7 +965,7 @@ Donner un sens lisible aux assertions.
 
 ### À dire
 
-À gauche, le test ne se contente pas de vérifier que le serveur répond deux cents. Il attend une décision et un montant précis. À droite, nous renvoyons la demande et comparons la réponse initiale au rejeu. Après le clearing, nous vérifions aussi les soldes. Ces tests PHP utilisent un stockage en mémoire pour aller vite ; les scripts HTTP complètent la vérification avec les services réels et MongoDB. Les points de suspension cachent la préparation, pas une promesse automatique du framework.
+Voici comment nous écrivons ces vérifications avec PHPUnit. À gauche, assertJsonContains recherche les champs et les valeurs attendus dans la réponse. À droite, assertSame compare la réponse initiale au rejeu. Les deux dernières assertions vérifient qu’après le clearing, le solde comptabilisé vaut 579,31 euros et que la réservation est à zéro. Ces tests utilisent un dépôt en mémoire. Les scripts des démos vérifient aussi le cycle avec MongoDB.
 
 ### Appui visuel / conduite
 
