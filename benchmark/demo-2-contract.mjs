@@ -5,6 +5,10 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
 import { verifyEvolution, verifyMerchant } from './demo-2-checks.mjs';
+import { createDetails } from './demo-output.mjs';
+
+const verbose = process.env.CARD_DEMO_VERBOSE || '1';
+const details = createDetails(verbose === '1');
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const api = process.env.API_ORIGIN || `http://localhost:${process.env.API_PORT || 8099}`;
@@ -30,15 +34,16 @@ async function request(origin, path, body, headers = {}, expected = 200) {
   const evidence = { method, url: origin + path, request: body, requestHeaders: headers,
     status: response.status, headers: Object.fromEntries(response.headers), raw };
   await writeFile(new URL(`${String(++sequence).padStart(3, '0')}.json`, output), JSON.stringify(evidence, null, 2));
+  details.add({ ...evidence, expectedStatus: expected, raw: undefined,
+    response: (() => { try { return JSON.parse(raw); } catch { return raw; } })() });
   assert.equal(response.status, expected, `${method} ${path}: ${raw}`);
   const data = JSON.parse(raw);
-  if (process.env.CARD_DEMO_VERBOSE === '1') console.log(method, path, JSON.stringify(data, null, 2));
   return { data, headers: response.headers };
 }
 try {
   await pause('1 / 3 — Déplacer le calcul : PHP HTTP, puis Go HTTP');
   const cycle = spawnSync(process.execPath, ['benchmark/card-cycle.mjs', 'http'], {
-    cwd: root, stdio: 'inherit', env: { ...process.env, CARD_DEMO_VERBOSE: process.env.CARD_DEMO_VERBOSE || '0' } });
+    cwd: root, stdio: 'inherit', env: { ...process.env, CARD_DEMO_VERBOSE: verbose } });
   if (cycle.error) throw cycle.error;
   assert.equal(cycle.status, 0, 'Le cycle HTTP a échoué. Arrêt de la démonstration.');
   console.log('✓ Même réponse métier entre PHP HTTP et Go HTTP, hors identités de scénarios.');
@@ -76,6 +81,7 @@ try {
   ]);
   console.log('✓ Réponses publiques équivalentes, hors identifiants validés de comptes/autorisations distincts.');
   console.log('✓ Même réservation de 420,69 €. La politique métier n’a pas changé.');
+  await details.show();
 
   await pause('3 / 3 — Choisir notre ressource publique : Provider, Jane et AutoMapper');
   const privateMerchant = (await request(go, '/v1/merchants/merchant_42')).data;
@@ -86,6 +92,7 @@ try {
   console.log('Contexte public :', publicMerchant['@context']);
   await request(api, '/api/merchant-risk-profiles/merchant_missing', undefined, {}, 404);
   console.log('✓ Projection vérifiée : cinq champs conservés, internalOwner absent, marchand inconnu → 404.');
+  await details.show();
   await writeFile(new URL('summary.json', output), JSON.stringify({ success: true, checks: [
     'HTTP cycles and cross-engine comparison', 'private V1/V2 to stable public response',
     'reservation effects', 'merchant projection', 'missing merchant 404'], recordedAt: new Date().toISOString() }, null, 2));
@@ -94,5 +101,6 @@ try {
   console.error('\nÉCHEC —', error.message);
   process.exitCode = 1;
 } finally {
+  details.flush();
   console.log('Captures complètes :', fileURLToPath(output));
 }

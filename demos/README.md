@@ -25,7 +25,7 @@ Ces trois scripts correspondent aux trois actes des slides. Le cas 2 contient de
 
 Le script facultatif `demo-4.sh` illustre un consommateur préparé, sans LLM, qui autorise et réserve sans clearing. Il utilise la même API et n’introduit pas de moteur supplémentaire.
 
-Les lanceurs réutilisent `benchmark/card-cycle.mjs` : pas de deuxième implémentation des scénarios. Les démos 1 et 3 affichent les échanges détaillés. La démo 2 affiche des synthèses et tableaux comparatifs ; CARD_DEMO_VERBOSE=1 réactive ses échanges détaillés. Un statut 409 ou 422 peut être **attendu** : c'est alors un test de conflit ou de validation, pas une panne. Une assertion non satisfaite arrête le script avec un code d'échec.
+Les lanceurs réutilisent `benchmark/card-cycle.mjs` : pas de deuxième implémentation des scénarios. Chaque cycle affiche d’abord un tableau des soldes observés, puis les échanges JSON. La démo 2 présente aussi ses tableaux de formats et de champs avant les JSON de chaque étape. En terminal interactif, une pause permet de lire la synthèse avant les détails. `CARD_DEMO_VERBOSE=0` masque les JSON à l’écran, sans supprimer les captures sur disque. Un statut 409 ou 422 peut être **attendu** : c'est alors un test de conflit ou de validation, pas une panne. Une assertion non satisfaite arrête le script avec un code d'échec.
 
 Chaque exécution crée des comptes de laboratoire neufs dans MongoDB, sans remise à zéro globale. Les comptes restent persistés. Les captures de réponses et le résumé sont conservés dans `benchmark/results/cycle-*/` et, pour les comparaisons de la démo 2, `benchmark/results/demo-2-*/` ; leur chemin est affiché en fin de scénario. Aucun benchmark, mesure comparative ou effacement de données n'est lancé.
 
@@ -51,6 +51,6 @@ Ces lanceurs ne régénèrent pas Jane et ne modifient pas le contrat. La démo 
 
 `./demos/demo-2.sh` enchaîne les cycles PHP HTTP et Go HTTP avec comparaison métier entre moteurs, puis affiche les formats Go V1/V2 face aux réponses publiques, et enfin le profil marchand privé/public. Les appels privés sont des inspections directes sur une entrée enrichie de référence, pas des captures du trafic interne. Les deux autorisations publiques utilisent des comptes neufs ; leurs identités sont validées et exclues du diff métier.
 
-Pauses entre les trois étapes en terminal interactif. `DEMO_AUTO=1` désactive les pauses. `CARD_DEMO_VERBOSE=1` affiche les JSON complets ; ils sont toujours conservés dans `benchmark/results/`. `RISK_ENGINE_ORIGIN` permet de changer l’adresse privée Go (par défaut localhost:8098). Un échec HTTP ou une assertion arrête la démo avec un code non nul. Aucun benchmark ni effacement de comptes.
+Pauses entre les trois étapes et avant les détails JSON en terminal interactif. `DEMO_AUTO=1` désactive les pauses. Les JSON complets s’affichent par défaut après les synthèses et restent conservés dans `benchmark/results/`. `RISK_ENGINE_ORIGIN` permet de changer l’adresse privée Go (par défaut localhost:8098). Un échec HTTP ou une assertion arrête la démo avec un code non nul. Aucun benchmark ni effacement de comptes.
 
 `make demo-go-http` conserve le cycle Go seul, et ne remplace pas cette présentation complète. Tests des vérifications du nouveau lanceur : `node --test benchmark/demo-2-checks.test.mjs`.

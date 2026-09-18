@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
+import { balanceRows, createDetails } from './demo-output.mjs';
+
+const details = createDetails(process.env.CARD_DEMO_VERBOSE === '1');
+process.once('exit', () => details.flush());
 
 // Functional evidence only. Intentionally no latency aggregation or performance claims.
 const origin = process.env.API_ORIGIN || `http://localhost:${process.env.API_PORT || 8099}`;
@@ -19,13 +23,8 @@ async function call(method, path, body, engine, wire='v1', expected=200) {
     body: body ? JSON.stringify(body) : undefined,
   });
   const data = await response.json();
-  if (process.env.CARD_DEMO_VERBOSE === '1') {
-    console.log('\n'+method+' '+path+' → HTTP '+response.status+' (attendu : '+expected+')');
-    if (engine) console.log('Moteur demandé : '+engine+(engine.endsWith('-http') ? ' ; contrat privé : '+wire : ''));
-    if (body) console.log('Requête : '+JSON.stringify(body,null,2));
-    if (response.headers.get('server-timing')) console.log('Server-Timing : '+response.headers.get('server-timing'));
-    console.log('Réponse : '+JSON.stringify(data,null,2));
-  }
+  details.add({ method, path, engine, wire, expectedStatus: expected,
+    status: response.status, request: body, headers: Object.fromEntries(response.headers), response: data });
   await writeFile(new URL(`${String(++sequence).padStart(3,'0')}.json`,output), JSON.stringify({method,path,engine,status:response.status,headers:Object.fromEntries(response.headers),body:data},null,2));
   assert.equal(response.status, expected, `${method} ${path}: ${JSON.stringify(data)}`);
   return {data, headers:response.headers};
@@ -50,7 +49,8 @@ for (const engine of engines) {
   const account = await scenario();
   const user = (await call('GET',`/api/users/${account.userId}`)).data;
   assert.equal(user.userId,account.userId);
-  assert.equal((await balance(account)).available,100000);
+  const initialBalance = await balance(account);
+  assert.equal(initialBalance.available,100000);
   const p = payload(account);
   const response = await call('POST','/api/payment-authorizations',p,engine);
   engineEvidence(response,engine);
@@ -59,7 +59,8 @@ for (const engine of engines) {
   assert.equal(auth.accountId, account.accountId);
   assert.equal(auth['@id'],`/api/payment-authorizations/${auth.authorizationId}`);
   reference ??= business(auth); assert.deepEqual(business(auth),reference);
-  assert.equal((await balance(account)).reserved,42069);
+  const authorizedBalance = await balance(account);
+  assert.deepEqual([authorizedBalance.booked, authorizedBalance.reserved, authorizedBalance.available], [100000,42069,57931]);
   const replay = await call('POST','/api/payment-authorizations',p,engine);
   assert.deepEqual(replay.data,auth); assert(!replay.headers.get('server-timing')?.includes('engine;'));
   if (selected === 'consumer') {
@@ -73,6 +74,8 @@ for (const engine of engines) {
   const first = (await call('POST','/api/clearings',clearing)).data;
   assert.equal(first.state,'posted'); assert.equal(first.amount,42069);
   assert.equal(first['@id'], `/api/clearings/${first.clearingId}`);
+  const clearedBalance = await balance(account);
+  assert.deepEqual([clearedBalance.booked,clearedBalance.reserved,clearedBalance.available],[57931,0,57931]);
   assert.deepEqual((await call('POST','/api/clearings',clearing)).data,first);
   assert.equal((await call('GET',auth['@id'])).data.state,'cleared');
   assert.deepEqual((await call('POST','/api/payment-authorizations',p,engine)).data,auth);
@@ -90,7 +93,13 @@ for (const engine of engines) {
     engineEvidence(v2,engine); assert.deepEqual(business(v2.data),reference);
   }
   checks.push({engine,cycle:true,idempotency:true,balance:end});
-  console.log(`  1 000,00 € → disponible 579,31 € → clearing : comptabilisé 579,31 €, réservé 0 €`);
+  console.table(balanceRows([
+    ['Avant autorisation', initialBalance], ['Après autorisation', authorizedBalance],
+    ['Après clearing', clearedBalance], ['Après rejeux', end],
+  ]));
+  console.log('✓ Même demande rejouée : réponse identique, sans nouveau débit.');
+  console.log('✓ Conflit de clé et entrée invalide : erreurs attendues vérifiées.');
+  console.log('Trace du calcul :', response.headers.get('server-timing'));
 }
 if (selected === 'all') {
   // Cross-worker concurrency against real MongoDB, including duplicate commands.
@@ -111,3 +120,4 @@ if (selected === 'all') {
 }
 await writeFile(new URL('summary.json',output),JSON.stringify({kind:'functional-proof',recordedAt:new Date().toISOString(),checks},null,2));
 console.log(`Preuves fonctionnelles : ${output.pathname}`);
+await details.show();
