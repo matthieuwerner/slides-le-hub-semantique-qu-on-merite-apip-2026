@@ -2754,10 +2754,10 @@ class: authorization-code
 <div class="label">Notre code métier</div>
 <p class="sub"><strong>go/risk</strong> calcule une évaluation.<br>Ce package ne connaît ni HTTP, ni Symfony, ni les types PHP.</p>
 </div><div>
-<div class="label">Le raccord fourni par FrankenPHP</div>
-<p class="sub"><strong>github.com/dunglas/frankenphp</strong><br>Enregistre l’extension et fournit les conversions PHP ↔ Go.</p>
+<div class="label">L’outillage fourni par FrankenPHP</div>
+<p class="sub"><strong>Générateur intégré : <code>extension-init</code></strong><br>Le package FrankenPHP fournit les conversions PHP ↔ Go.</p>
 </div></div>
-<p class="sub">Nous écrivons un adaptateur autour du calcul.<br>API Platform et BankService restent en PHP.</p>
+<p class="sub">Nous écrivons l’adaptateur. <strong>FrankenPHP génère la liaison.</strong><br>Aucun plugin tiers à installer. API Platform et BankService restent en PHP.</p>
 
 <!--
 **Slide 52 · 33:50–34:30 · 40 s**
@@ -2768,7 +2768,7 @@ Distinguer notre bibliothèque métier et l’outillage FrankenPHP.
 
 ### À dire
 
-Au centre, go/risk est notre bibliothèque de calcul. Le service HTTP l’appelait déjà. Nous ajoutons maintenant un second appelant : notre extension PHP. La logique de risque n’est pas recopiée dans ce raccord. FrankenPHP nous fournit les outils pour enregistrer l’extension et convertir les valeurs entre PHP et Go. Notre bibliothèque métier, elle, ne connaît ni Symfony ni les tableaux PHP. Ce découpage permet de réutiliser le même calcul.
+Au centre, go/risk est la bibliothèque que notre service HTTP appelle déjà. Nous écrivons un second point d’entrée autour de ce même calcul : notre extension PHP. Pour la créer, aucun plugin tiers n’est nécessaire. FrankenPHP fournit son générateur extension-init et les fonctions de conversion entre PHP et Go. Nous écrivons l’adaptateur, le générateur produit le code de liaison. Il faudra ensuite compiler les deux dans notre serveur. La bibliothèque métier reste inchangée.
 
 ### Appui visuel / conduite
 
@@ -2930,16 +2930,16 @@ func assess(arr *C.zend_array) unsafe.Pointer {
 }
 ~~~
 
-<p class="sub">Les annotations déclarent le nom PHP et sa signature.</p>
+<p class="sub"><code>export_php:function</code> indique au générateur<br>la signature à exposer côté PHP.</p>
 </div><div>
-<div class="label">Fichiers générés</div>
+<div class="label">Code de liaison produit par FrankenPHP</div>
 <p class="sub"><strong>risk_generated.go</strong><br>Raccord Go et enregistrement de l’extension.</p>
 <p class="sub"><strong>risk.c / risk.h / risk_arginfo.h</strong><br>Raccord PHP et types des arguments.</p>
 <p class="sub"><strong>risk.stub.php</strong><br>Signature PHP pour l’outillage.</p>
 </div></div>
 
 ~~~sh
-# Dans go/ext, pendant le build
+# 1. Générer la liaison depuis go/ext
 GEN_STUB_SCRIPT=/usr/local/lib/php/build/gen_stub.php \
   frankenphp extension-init risk.go
 ~~~
@@ -2953,7 +2953,7 @@ Expliquer annotations, génération et stub.
 
 ### À dire
 
-Nous écrivons notre fonction Go et deux indications pour le générateur. La première choisit son namespace PHP, la seconde sa signature : un tableau en entrée et en sortie. Le générateur de FrankenPHP produit les fichiers qui relient PHP à Go. Il produit aussi un stub pour que les outils PHP connaissent la signature. Ce stub n’exécute pas le calcul. Il faut encore compiler l’extension et l’intégrer au serveur. Les commentaires montrés ici sont donc lus pendant la génération.
+Nous écrivons notre fonction Go et ces commentaires que le générateur sait lire. Namespace choisit le nom PHP de notre extension. Export PHP function décrit la signature : ici, un tableau en entrée et en sortie. En bas, extension-init lit ce fichier et produit les liaisons Go et C, ainsi que le stub PHP pour les outils. La variable GEN_STUB_SCRIPT désigne un outil fourni par PHP, déjà présent dans notre image de construction. À ce stade, les fichiers sont générés, mais aucun nouveau serveur n’a encore été compilé.
 
 ### Appui visuel / conduite
 
@@ -2989,9 +2989,9 @@ import (
 )
 ~~~
 
-<p class="sub">L’import initialise le package et enregistre la fonction PHP.</p>
+<p class="sub">L’import inclut notre extension. Au démarrage, elle enregistre la fonction PHP.</p>
 <div class="flow"><div>Image builder<br><span class="small">CGO + headers PHP</span></div><span>→</span><div>go build<br><span class="small">Serveur + extension</span></div><span>→</span><div>Image d’exécution<br><span class="small">Binaire FrankenPHP construit</span></div></div>
-<p class="small">php-config fournit les options de compilation et de liaison.<br>La commande complète est dans build/api.Dockerfile. Une modification Go impose un nouveau build.</p>
+<p class="small"><strong>2. Compiler :</strong> <code>go build</code> assemble FrankenPHP et notre extension.<br>Options CGO et PHP dans build/api.Dockerfile. Une modification Go impose un nouveau build.</p>
 
 <!--
 **Slide 56 · 37:05–38:05 · 60 s**
@@ -3002,7 +3002,7 @@ Expliquer l’intégration au binaire et le coût de livraison.
 
 ### À dire
 
-Dans notre point d’entrée Go, l’import avec un underscore initialise le package de l’extension. Le raccord généré l’enregistre auprès de PHP. Nous compilons ensuite un binaire FrankenPHP qui contient ce code. L’image de construction dispose des outils et des en-têtes PHP nécessaires ; l’image finale reçoit le binaire construit. Symfony reste exécuté en PHP. Ce n’est pas un module activé à chaud dans une route : modifier notre Go embarqué demande un nouveau build et un redéploiement.
+Après la génération, voici la compilation. L’import avec un underscore inclut notre extension dans le programme. Au démarrage du binaire, son initialisation enregistre la fonction auprès de PHP. Notre Dockerfile utilise go build avec CGO et les en-têtes PHP pour construire FrankenPHP avec cette extension. L’image finale reçoit ce binaire. Symfony reste du PHP. Si nous modifions le Go embarqué, nous reconstruisons l’image et remplaçons les instances qui tournent avec l’ancien binaire.
 
 ### Appui visuel / conduite
 
@@ -3059,7 +3059,7 @@ $verdict = \BoundaryLab\Native\assess([
 ~~~
 
 </div><div>
-<div class="label">Étape exécutée dans le Dockerfile</div>
+<div class="label">3. Vérifier le binaire construit</div>
 
 ~~~sh
 /out/frankenphp php-cli /tmp/verify-extension.php
@@ -3068,7 +3068,7 @@ $verdict = \BoundaryLab\Native\assess([
 <p class="sub">Extension chargée.<br>Fonction disponible.<br>Résultat de référence conforme.</p>
 <p class="small">Un échec interrompt la construction de l’image.</p>
 </div></div>
-<p class="sub">La démo vérifiera ensuite le cycle public complet.</p>
+<p class="sub">Puis déployer la nouvelle image et redémarrer les instances.<br><strong>Pas de chargement à chaud.</strong> La démo vérifie ensuite le cycle public.</p>
 
 <!--
 **Slide 57 · 38:05–38:35 · 30 s**
@@ -3079,7 +3079,7 @@ Expliquer le test du raccord, distinct du test de toute l’API.
 
 ### À dire
 
-Notre build lance le nouveau binaire en mode PHP CLI. Le script vérifie que l’extension et la fonction existent, puis appelle réellement le calcul sur un exemple connu. Il compare le résultat attendu. Si une vérification échoue, la construction s’arrête. Cela attrape un raccord absent ou mal intégré avant de lancer l’API. Ce n’est pas encore une preuve sur tout le paiement, ni sur la tenue en concurrence : nous allons compléter avec le cycle public.
+Notre build lance le nouveau binaire en mode PHP CLI. Le script vérifie que l’extension et la fonction existent, puis appelle le calcul sur un exemple connu. Si le résultat est incorrect, la construction s’arrête. Après ce contrôle, nous pouvons déployer l’image et démarrer de nouvelles instances avec ce binaire. L’ancien serveur ne charge pas l’extension à la volée. La démo complétera ce test du raccord par le cycle de paiement public.
 
 ### Appui visuel / conduite
 
